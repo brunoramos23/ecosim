@@ -13,7 +13,8 @@ find_package(Boost 1.65.1 REQUIRED COMPONENTS system)
 include_directories(${Boost_INCLUDE_DIRS} src)
 
 # target executable and its source files
-add_executable(ecosim src/main.cpp)
+add_executable(ecosim src/main.cpp src/Plants/plants.cpp) 
+
 
 # link Boost libraries to the target executable
 target_link_libraries(ecosim ${Boost_LIBRARIES})

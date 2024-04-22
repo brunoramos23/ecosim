@@ -4,6 +4,9 @@
 #include "crow_all.h"
 #include "json.hpp"
 #include <random>
+#include "Plants/plants.h"
+#include "herbivores/herbivores.h"
+#include "carnivores/carnivores.h"
 
 static const uint32_t NUM_ROWS = 15;
 
@@ -23,27 +26,8 @@ const double HERBIVORE_EAT_PROBABILITY = 0.9;
 const double CARNIVORE_MOVE_PROBABILITY = 0.5;
 const double CARNIVORE_EAT_PROBABILITY = 1.0;
 
-// Type definitions
-enum entity_type_t
-{
-    empty,
-    plant,
-    herbivore,
-    carnivore
-};
 
-struct pos_t
-{
-    uint32_t i;
-    uint32_t j;
-};
 
-struct entity_t
-{
-    entity_type_t type;
-    int32_t energy;
-    int32_t age;
-};
 
 // Auxiliary code to convert the entity_type_t enum to a string
 NLOHMANN_JSON_SERIALIZE_ENUM(entity_type_t, {
@@ -98,11 +82,24 @@ int main()
         
         // Create the entities
         // <YOUR CODE HERE>
+        Plant plant(PLANT_MAXIMUM_AGE, PLANT_REPRODUCTION_PROBABILITY);
+        plant.grow(entity_grid, NUM_ROWS);
+
 
         // Return the JSON representation of the entity grid
         nlohmann::json json_grid = entity_grid; 
         res.body = json_grid.dump();
         res.end(); });
+
+        Herbivores herbivores(HERBIVORE_MAXIMUM_AGE, HERBIVORE_REPRODUCTION_PROBABILITY);
+        herbivores.move(entity_grid);
+        herbivores.eat(entity_grid);
+        herbivores.reproduce(entity_grid);
+
+        Carnivores carnivores(CARNIVORE_MAXIMUM_AGE, CARNIVORE_REPRODUCTION_PROBABILITY);
+        carnivores.move(entity_grid);
+        carnivores.eat(entity_grid);
+        carnivores.reproduce(entity_grid);
 
     // Endpoint to process HTTP GET requests for the next simulation iteration
     CROW_ROUTE(app, "/next-iteration")
