@@ -39,10 +39,19 @@
                     aria-controls="controls-content">Toggle</button></h5>
             <div id="controls-content" class="collapse show">
                 <table class="table borderless">
+                    <thead>
+                        <tr>
+                            <th>Simulation Data</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
                             <td><label for="interval">Update Interval (seconds):</label></td>
                             <td><input type="number" id="interval" value="1" min="0.1" step="0.1"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="dimension">Square Dimension:</label></td>
+                            <td><input type="number" id="dimension" value="15" min="1" step="1"></td>
                         </tr>
                         <tr>
                             <td><label for="plants">Initial number of Plants:</label></td>
@@ -92,13 +101,14 @@
             const plants = parseInt(document.getElementById('plants').value);
             const herbivores = parseInt(document.getElementById('herbivores').value);
             const carnivores = parseInt(document.getElementById('carnivores').value);
+            const dimension = parseInt(document.getElementById('dimension').value);
 
             fetch('/start-simulation', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ plants, herbivores, carnivores }),
+                body: JSON.stringify({ plants, herbivores, carnivores, dimension }),
             })
                 .then(() => {
                     document.getElementById('start-button').disabled = true;
@@ -107,6 +117,7 @@
                     document.getElementById('plants').disabled = true;
                     document.getElementById('herbivores').disabled = true;
                     document.getElementById('carnivores').disabled = true;
+                    document.getElementById('dimension').disabled = true;
                     const interval = parseFloat(document.getElementById('interval').value) * 1000;
                     intervalID = setInterval(fetchIteration, interval);
                 })
@@ -121,6 +132,7 @@
             document.getElementById('plants').disabled = false;
             document.getElementById('herbivores').disabled = false;
             document.getElementById('carnivores').disabled = false;
+            document.getElementById('dimension').disabled = false;
         }
         function fetchIteration() {
             iterationCount++;
@@ -132,6 +144,7 @@
         }
 
         function updateGrid(grid) {
+            console.log(grid)
             const gridDiv = document.getElementById('grid');
             gridDiv.innerHTML = '';
             grid.forEach(row => {
